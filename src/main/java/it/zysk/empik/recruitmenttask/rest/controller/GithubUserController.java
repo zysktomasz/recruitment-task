@@ -1,7 +1,7 @@
 package it.zysk.empik.recruitmenttask.rest.controller;
 
 import it.zysk.empik.recruitmenttask.github.GithubApiService;
-import it.zysk.empik.recruitmenttask.github.model.GithubUser;
+import it.zysk.empik.recruitmenttask.github.dto.GithubUserDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -19,8 +19,8 @@ public class GithubUserController {
     private final GithubApiService githubApiService;
 
     @GetMapping("{login}")
-    public ResponseEntity<GithubUser> getGithubProfile(@PathVariable String login) {
-        GithubUser user = githubApiService.getUser(login);
+    public ResponseEntity<GithubUserDTO> getGithubProfile(@PathVariable String login) {
+        GithubUserDTO user = githubApiService.getUser(login);
         return ResponseEntity.ok(user);
     }
 }

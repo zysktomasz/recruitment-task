@@ -1,5 +1,7 @@
 package it.zysk.empik.recruitmenttask.github;
 
+import it.zysk.empik.recruitmenttask.github.dto.GithubUserDTO;
+import it.zysk.empik.recruitmenttask.github.mapper.GithubMapper;
 import it.zysk.empik.recruitmenttask.github.model.GithubUser;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -9,14 +11,16 @@ import org.springframework.stereotype.Service;
 public class GithubApiService {
 
     private final GithubApiClient githubApiClient;
+    private final GithubMapper githubMapper;
 
-    public GithubUser getUser(String login) {
+    public GithubUserDTO getUser(String login) {
         if (login == null || login.isBlank()) {
             throw new IllegalArgumentException("'login' parameter cannot be empty");
         }
 
         // todo: handle response from GithubApi when Github user for provided 'login' does not exist
 
-        return githubApiClient.getUser(login);
+        GithubUser user = githubApiClient.getUser(login);
+        return githubMapper.mapGithubUserToDTO(user);
     }
 }

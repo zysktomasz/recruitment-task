@@ -22,4 +22,9 @@ public class GithubUser {
 
     @JsonProperty("created_at")
     private LocalDateTime createdAt;
+
+    private Long followers;
+
+    @JsonProperty("public_repos")
+    private Long publicRepos;
 }

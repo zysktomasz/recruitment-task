@@ -1,5 +1,7 @@
 package it.zysk.empik.recruitmenttask.github;
 
+import it.zysk.empik.recruitmenttask.github.dto.GithubUserDTO;
+import it.zysk.empik.recruitmenttask.github.mapper.GithubMapper;
 import it.zysk.empik.recruitmenttask.github.model.GithubUser;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -21,6 +23,9 @@ class GithubApiServiceTest {
     @Mock
     private GithubApiClient githubApiClient;
 
+    @Mock
+    private GithubMapper githubMapper;
+
     @InjectMocks
     private GithubApiService githubApiService;
 
@@ -36,15 +41,18 @@ class GithubApiServiceTest {
         }
 
         @Test
-        void should_ReturnGithubUser_When_GithubUserExists() {
-            String someLogin = "someLogin";
-            GithubUser githubUser = GithubUser.builder().id(1L).login(someLogin).build();
-            doReturn(githubUser).when(githubApiClient).getUser(someLogin);
+        void should_ReturnGithubUserDTO_When_GithubUserExists() {
+            String login = "someLogin";
+            Long id = 1L;
+            GithubUser githubUser = GithubUser.builder().id(id).login(login).build();
+            GithubUserDTO githubUserDTO = GithubUserDTO.builder().id(id).login(login).build();
+            doReturn(githubUser).when(githubApiClient).getUser(login);
+            doReturn(githubUserDTO).when(githubMapper).mapGithubUserToDTO(githubUser);
 
-            GithubUser responseUser = githubApiService.getUser(someLogin);
+            GithubUserDTO responseUser = githubApiService.getUser(login);
 
-            assertEquals(githubUser, responseUser);
-            verify(githubApiClient).getUser(someLogin);
+            assertEquals(githubUserDTO, responseUser);
+            verify(githubApiClient).getUser(login);
         }
     }
 }
