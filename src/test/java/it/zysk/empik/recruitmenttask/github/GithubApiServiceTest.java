@@ -1,5 +1,6 @@
 package it.zysk.empik.recruitmenttask.github;
 
+import feign.FeignException;
 import it.zysk.empik.recruitmenttask.github.dto.GithubUserDTO;
 import it.zysk.empik.recruitmenttask.github.mapper.GithubMapper;
 import it.zysk.empik.recruitmenttask.github.model.GithubUser;
@@ -12,9 +13,14 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.Optional;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
@@ -49,9 +55,22 @@ class GithubApiServiceTest {
             doReturn(githubUser).when(githubApiClient).getUser(login);
             doReturn(githubUserDTO).when(githubMapper).mapGithubUserToDTO(githubUser);
 
-            GithubUserDTO responseUser = githubApiService.getUser(login);
+            Optional<GithubUserDTO> responseUser = githubApiService.getUser(login);
 
-            assertEquals(githubUserDTO, responseUser);
+            assertTrue(responseUser.isPresent());
+            assertEquals(githubUserDTO, responseUser.get());
+            verify(githubApiClient).getUser(login);
+        }
+
+        @Test
+        void should_ReturnEmptyOptional_When_GithubUserDoesNotExist() {
+            String login = "notExistingLogin";
+            FeignException.NotFound notFoundExceptionMock = mock(FeignException.NotFound.class);
+            doThrow(notFoundExceptionMock).when(githubApiClient).getUser(login);
+
+            Optional<GithubUserDTO> responseUser = githubApiService.getUser(login);
+
+            assertTrue(responseUser.isEmpty());
             verify(githubApiClient).getUser(login);
         }
     }

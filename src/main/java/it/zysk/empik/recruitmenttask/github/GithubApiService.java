@@ -1,26 +1,36 @@
 package it.zysk.empik.recruitmenttask.github;
 
+import feign.FeignException;
 import it.zysk.empik.recruitmenttask.github.dto.GithubUserDTO;
 import it.zysk.empik.recruitmenttask.github.mapper.GithubMapper;
 import it.zysk.empik.recruitmenttask.github.model.GithubUser;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class GithubApiService {
 
     private final GithubApiClient githubApiClient;
     private final GithubMapper githubMapper;
 
-    public GithubUserDTO getUser(String login) {
+    public Optional<GithubUserDTO> getUser(String login) {
         if (login == null || login.isBlank()) {
             throw new IllegalArgumentException("'login' parameter cannot be empty");
         }
 
-        // todo: handle response from GithubApi when Github user for provided 'login' does not exist
+        GithubUser user;
+        try {
+            user = githubApiClient.getUser(login);
+        } catch (FeignException.NotFound notFound) {
+            log.warn("Unable to find Github User with login: '{}'", login);
+            return Optional.empty();
+        }
 
-        GithubUser user = githubApiClient.getUser(login);
-        return githubMapper.mapGithubUserToDTO(user);
+        return Optional.of(githubMapper.mapGithubUserToDTO(user));
     }
 }

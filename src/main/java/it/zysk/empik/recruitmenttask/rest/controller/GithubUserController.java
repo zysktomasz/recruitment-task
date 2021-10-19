@@ -20,7 +20,8 @@ public class GithubUserController {
 
     @GetMapping("{login}")
     public ResponseEntity<GithubUserDTO> getGithubProfile(@PathVariable String login) {
-        GithubUserDTO user = githubApiService.getUser(login);
-        return ResponseEntity.ok(user);
+        return githubApiService.getUser(login)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
     }
 }
