@@ -1,5 +1,6 @@
 package it.zysk.empik.recruitmenttask.rest.controller;
 
+import io.swagger.annotations.ApiOperation;
 import it.zysk.empik.recruitmenttask.counter.service.CounterService;
 import it.zysk.empik.recruitmenttask.github.GithubApiService;
 import it.zysk.empik.recruitmenttask.github.dto.GithubUserDTO;
@@ -15,11 +16,10 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class GithubUserController {
 
-    // todo: add exception handler
-
     private final GithubApiService githubApiService;
     private final CounterService counterService;
 
+    @ApiOperation(value = "Get Github User details")
     @GetMapping("{login}")
     public ResponseEntity<GithubUserDTO> getGithubProfile(@PathVariable String login) {
         counterService.saveUserRequestCount(login);
