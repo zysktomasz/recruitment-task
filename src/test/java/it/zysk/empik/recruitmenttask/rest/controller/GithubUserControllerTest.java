@@ -1,14 +1,15 @@
 package it.zysk.empik.recruitmenttask.rest.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import it.zysk.empik.recruitmenttask.counter.service.CounterService;
 import it.zysk.empik.recruitmenttask.github.GithubApiService;
 import it.zysk.empik.recruitmenttask.github.dto.GithubUserDTO;
 import org.junit.jupiter.api.Test;
+import org.springframework.aop.aspectj.annotation.AnnotationAwareAspectJAutoProxyCreator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletResponse;
@@ -18,11 +19,11 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 
 @AutoConfigureMockMvc
 @WebMvcTest(GithubUserController.class)
+@Import(AnnotationAwareAspectJAutoProxyCreator.class)
 class GithubUserControllerTest {
 
     @Autowired
@@ -30,20 +31,6 @@ class GithubUserControllerTest {
 
     @MockBean
     private GithubApiService githubApiService;
-
-    @MockBean
-    private CounterService counterService;
-
-    @Test
-    void should_InvokeCounterServiceWithValidLogin_When_Called() throws Exception {
-        String login = "someLogin";
-
-        mvc.perform(get("/users/" + login)
-                        .accept(MediaType.APPLICATION_JSON))
-                .andReturn();
-
-        verify(counterService).saveUserRequestCount(login);
-    }
 
     @Test
     void should_ReturnNoFoundResponse_When_UserIsNotFound() throws Exception {
